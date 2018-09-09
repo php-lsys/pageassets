@@ -1,0 +1,16 @@
+{
+	"name" : "lsys/pageassets",
+	"type" : "library",
+	"license": "Apache-2.0",
+	"version" : "1.0.0",
+	"description" : "lsys module pageassets",
+	"autoload" : {
+		"psr-4" : {
+			"LSYS\\" : "src/classes/LSYS/"
+		}
+	},
+	"require" : {
+		"php" : ">=5.5",
+		"lsys/config" : "~1.0.0"
+	}
+}
