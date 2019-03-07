@@ -14,5 +14,5 @@ $merge&&ob_start();
 include "tpl.php";
 ?>
 <?php
-if ($assets->get_merge()) echo $assets->get_merge()->render(ob_get_clean());//进行引入资源压缩渲染，配置参考:config/assets.php
+if ($assets->getMerge()) echo $assets->getMerge()->render(ob_get_clean());//进行引入资源压缩渲染，配置参考:config/assets.php
 ?>

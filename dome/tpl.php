@@ -28,7 +28,7 @@ bds.util.domain = (function(){
 <script type="text/javascript">
 //ddd
 </script>
-<?=$assets->file_url('image/ss.jpg');?>
+<?=$assets->fileUrl('image/ss.jpg');?>
 
 <?=$assets->js('js/a.js',false);?>
 <script type="text/javascript">

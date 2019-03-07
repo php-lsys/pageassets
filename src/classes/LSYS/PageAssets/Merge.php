@@ -34,7 +34,7 @@ class Merge{
 	 * @param Config $config
 	 * @return \LSYS\PageAssets\Merge
 	 */
-	public function set_page_assets(PageAssets $page_assets,Config $config){
+	public function setPageAssets(PageAssets $page_assets,Config $config){
 		$this->_page_assets=$page_assets;
 		$this->_config=$config;
 		$_defdir="./";
@@ -47,7 +47,7 @@ class Merge{
 	 * 获取设置的PageAssets
 	 * @return \LSYS\PageAssets
 	 */
-	public function get_page_assets(){
+	public function getPageAssets(){
 		return $this->_page_assets;
 	}
 	/**
@@ -56,22 +56,22 @@ class Merge{
 	 * @param string $attr
 	 * @return \LSYS\PageAssets\Merge
 	 */
-	public function add_header_css(CSSFile $css,$attr=null){
+	public function addHeaderCss(CSSFile $css,$attr=null){
 		$this->_header_css[]=func_get_args();
 		return $this;
 	}
 	
-	public function bulid_css(CSSFile $css){
-		return $this->_bulid_file($css,'css',"css_url",$this->_file_path,function($data)use($css){
+	public function bulidCss(CSSFile $css){
+		return $this->_bulidFile($css,'css',"css_url",$this->_file_path,function($data)use($css){
 			return $data;
 		});
 	}
-	protected function _file_get_time($file){
+	protected function _fileGetTime($file){
 		if (!is_file($file))return 0;
 		return filemtime($file);
 	}
-	protected function _bulid_file(AssetsFile $file,$type,$tag_handle,$path,$callback){
-		if (!$file->is_local())return $file->path();
+	protected function _bulidFile(AssetsFile $file,$type,$tag_handle,$path,$callback){
+		if (!$file->isLocal())return $file->path();
 		$url=$file->path();
 		
 		$_bulid_file=$type.'_'.str_replace(array("/","\\",':','.','?','&'),"_", $url).'.'.$type;
@@ -81,7 +81,7 @@ class Merge{
 			if (is_file($_file)){
 				$bulid_file=$this->_merge_path.$_bulid_file;
 				if (is_file($bulid_file)){
-					if (filemtime($_file)>$this->_file_get_time($bulid_file)){
+					if (filemtime($_file)>$this->_fileGetTime($bulid_file)){
 						$is_bulid=true;
 					}
 				}else $is_bulid=true;
@@ -91,29 +91,29 @@ class Merge{
 					if($_data==$data){
 						return call_user_func(array($this->_page_assets,$tag_handle),$file);
 					}
-					$this->_write_bulid($_bulid_file, $data);
+					$this->_writeBulid($_bulid_file, $data);
 				}
 			}else{
-				return $this->_notfind_url($file);
+				return $this->_notfindUrl($file);
 			}
 		}
-		return $this->_bulid_url($_bulid_file);
+		return $this->_bulidUrl($_bulid_file);
 	}
 	/**
 	 * 得到本地文件未找到路径
 	 * @param string $url
 	 * @return string
 	 */
-	protected function _notfind_url($file){
+	protected function _notfindUrl($file){
 		$url=$this->_page_assets->url($file);
-		return $this->_set_notfind_url($url);
+		return $this->_setNotfindUrl($url);
 	}
 	/**
 	 * 得到本地文件未找到路径
 	 * @param string $url
 	 * @return string
 	 */
-	protected function _set_notfind_url($url){
+	protected function _setNotfindUrl($url){
 		$notfind='notfind';
 		if (strpos($url, '?')===false)return $url."?".$notfind;
 		else return $url."&".$notfind;
@@ -123,7 +123,7 @@ class Merge{
 	 * @param string $url
 	 * @return boolean
 	 */
-	public function is_notfind_url($url){
+	public function isNotfindUrl($url){
 		if (substr($url, -7)=='notfind')return true;
 		else return false;
 	}
@@ -133,7 +133,7 @@ class Merge{
 	 * @param string $attr
 	 * @return \LSYS\PageAssets\Merge
 	 */
-	public function add_header_js(JSFile $css,$attr=null){
+	public function addHeaderJs(JSFile $css,$attr=null){
 		$this->_header_js[]=func_get_args();
 		return $this;
 	}
@@ -143,13 +143,13 @@ class Merge{
 	 * @param string $attr
 	 * @return \LSYS\PageAssets\Merge
 	 */
-	public function add_footer_js(JSFile $css,$attr=null){
+	public function addFooterJs(JSFile $css,$attr=null){
 		$this->_footer_js[]=func_get_args();
 		return $this;
 	}
 	
-	public function bulid_js(JSFile $js){
-		return $this->_bulid_file($js,'js',"js_url", $this->_file_path,function($data){
+	public function bulidJs(JSFile $js){
+		return $this->_bulidFile($js,'js',"js_url", $this->_file_path,function($data){
 			return $data;
 		});
 	}
@@ -162,14 +162,14 @@ class Merge{
 	 * @param callable $file_handle
 	 * @return string
 	 */
-	protected function _render_file(array $files,$path,$ext,$tag_handle,$file_handle){
+	protected function _renderFile(array $files,$path,$ext,$tag_handle,$file_handle){
 		$attrs=$_header=$_file=[];
 		foreach ($files as $k=>$v){
 			/**
 			 * @var AssetsFile $_
 			 */
 			list($_,$attr)=$v;
-			if ($_->is_local()){
+			if ($_->isLocal()){
 				$_file[]=$_->path();
 			}else{
 				unset($files[$k]);
@@ -184,7 +184,7 @@ class Merge{
 			$bulid_file=md5($_files).".".$ext;
 			if ($this->_bulid){
 				if (!is_file($this->_merge_path.$bulid_file))$is_bulid=true;
-				$bulid_time=$this->_file_get_time($this->_merge_path.$bulid_file);
+				$bulid_time=$this->_fileGetTime($this->_merge_path.$bulid_file);
 				foreach ($files as $k=>$v){
 					list($_file)=$v;
 					if (!is_file($path.$_file->path(false))||@filemtime($path.$_file->path(false))>$bulid_time){
@@ -196,7 +196,7 @@ class Merge{
 					foreach ($files as $v){
 						list($_file)=$v;
 						if (!is_file($path.$_file->path(false))){//文件不存在 不参与编译
-							$_header[]=call_user_func(array($this->_page_assets,$tag_handle),$this->_notfind_url($_file), $attr);
+							$_header[]=call_user_func(array($this->_page_assets,$tag_handle),$this->_notfindUrl($_file), $attr);
 							continue;
 						}
 						$body=file_get_contents($path.$_file->path(false));
@@ -204,10 +204,10 @@ class Merge{
 					}
 					$filebody=implode("\n", $filebody);
 					$filebody="/*file:{$_files}*/\n{$filebody}";
-					$this->_write_bulid($bulid_file, $filebody);
+					$this->_writeBulid($bulid_file, $filebody);
 				}
 			}
-			$url=$this->_bulid_url($bulid_file);
+			$url=$this->_bulidUrl($bulid_file);
 			$_header[]=call_user_func(array($this->_page_assets,$tag_handle),$url, $attr);
 		}
 		return implode("", $_header);
@@ -217,7 +217,7 @@ class Merge{
 	 * @param string $file
 	 * @return string
 	 */
-	protected function _bulid_url($file){
+	protected function _bulidUrl($file){
 		if (count($this->_merge_url)==0)$url='./';
 		else $url=$this->_merge_url[rand(0,count($this->_merge_url)-1)];
 		return $url.$file;
@@ -231,7 +231,7 @@ class Merge{
 		if (count($this->_header_css)==0
 			&&count($this->_header_js)==0
 			&&count($this->_footer_js)==0)return $html;
-		$css_header=$this->_render_file(
+		$css_header=$this->_renderFile(
 			$this->_header_css, 
 			$this->_file_path, 
 			"css", 
@@ -239,7 +239,7 @@ class Merge{
 			function($css,$body){
 				return $body;
 			});
-		$js_header=$this->_render_file(
+		$js_header=$this->_renderFile(
 			$this->_header_js, 
 			$this->_file_path, 
 			"js", 
@@ -247,7 +247,7 @@ class Merge{
 			function($js,$body){
 				return $body;
 			});
-		$js_footer=$this->_render_file(
+		$js_footer=$this->_renderFile(
 			$this->_footer_js, 
 			$this->_file_path, 
 			"js", 
@@ -291,7 +291,7 @@ class Merge{
 	 * @param string $data
 	 * @throws Exception
 	 */
-	protected function _write_bulid(&$file,$data){
+	protected function _writeBulid(&$file,$data){
 		$file=str_replace(["'",'"'], "-", $file);
 		$dir=dirname($this->_merge_path.$file);
 		if (!is_dir($dir)) throw new Exception(strtr("assets bulid dir not find,plase check your assets config [:dir]",array(":dir"=>$dir)));

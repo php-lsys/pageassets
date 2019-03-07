@@ -23,7 +23,7 @@ class PageAssets {
 	 * @param Merge $merge
 	 */
 	public function __construct(Config $config,Merge $merge=null){
-		if ($merge)$this->_merge=$merge->set_page_assets($this,$config);
+		if ($merge)$this->_merge=$merge->setPageAssets($this,$config);
 		$this->_version=$config->get("version","1.0");
 		$dir=realpath(__DIR__."/../../../");
 		$_defurl="assets/";
@@ -35,17 +35,17 @@ class PageAssets {
 	 * @return string
 	 */
 	public function url(AssetsFile $file){
-		if (!$file->is_local())return $file->path();
+		if (!$file->isLocal())return $file->path();
 		$url=$this->_file_url;
 		$path=$file->path();
-		return $this->_find_url($url).$path;
+		return $this->_findUrl($url).$path;
 	}
 	/**
 	 * 得到完整css链接
 	 * @param string $css_url
 	 * @return string
 	 */
-	public function css_url($css_url){
+	public function cssUrl($css_url){
 		$css_url=$this->_cssobj($css_url);
 		return $this->url($css_url);
 	}
@@ -80,18 +80,18 @@ class PageAssets {
 		if (!$css_url instanceof CSSFile){
 			$css_url=new CSSFile(strval($css_url),$this->_version);
 		}
-		if ($this->_is_load($css_url))return;
+		if ($this->_isLoad($css_url))return;
 		$attr=$this->_attributes($attr);
 		if ($is_merge&&$this->_merge){
-			$this->_merge->add_header_css($css_url,$attr);
+			$this->_merge->addHeaderCss($css_url,$attr);
 			return;
 		}else{
 			if ($this->_merge){
-				$link=$this->_merge->bulid_css($css_url);
+				$link=$this->_merge->bulidCss($css_url);
 			}else{
 				$link=$this->url($css_url);
 			}
-			return $this->css_tag($link, $attr);
+			return $this->cssTag($link, $attr);
 		}
 	}
 	/**
@@ -99,7 +99,7 @@ class PageAssets {
 	 * @param string $js_url
 	 * @return string
 	 */
-	public function js_url($js_url){
+	public function jsUrl($js_url){
 		$js_url=$this->_jsobj($js_url);
 		return $this->url($js_url);
 	}
@@ -133,29 +133,29 @@ class PageAssets {
 	 */
 	public function js($js_url,$is_merge=null,$attr=[]){
 		$js_url=$this->_jsobj($js_url);
-		if ($this->_is_load($js_url))return;
+		if ($this->_isLoad($js_url))return;
 		$attr=$this->_attributes($attr);
 		if ($is_merge===true&&$this->_merge){
-			$this->_merge->add_header_js($js_url,$attr);
+			$this->_merge->addHeaderJs($js_url,$attr);
 			return;
 		}
 		if ($is_merge===false&&$this->_merge){
-			$this->_merge->add_footer_js($js_url,$attr);
+			$this->_merge->addFooterJs($js_url,$attr);
 			return;
 		}
 		if ($this->_merge){
-			$link=$this->_merge->bulid_js($js_url);
+			$link=$this->_merge->bulidJs($js_url);
 		}else{
 			$link=$this->url($js_url);
 		}
-		return $this->js_tag($link, $attr);
+		return $this->jsTag($link, $attr);
 	}
 	/**
 	 * 得到完整的文件链接
 	 * @param string $file_url
 	 * @return string
 	 */
-	public function file_url($file_url){
+	public function fileUrl($file_url){
 		if (!$file_url instanceof AssetsFile){
 			$file_url=new AssetsFile($file_url,$this->_version);
 		}
@@ -167,7 +167,7 @@ class PageAssets {
 	 * @param string $attr
 	 * @return string
 	 */
-	public function css_tag($link,$attr){
+	public function cssTag($link,$attr){
 		return "<link type='text/css' rel='stylesheet' href='{$link}' {$attr}/>\n";
 	}
 	/**
@@ -176,37 +176,37 @@ class PageAssets {
 	 * @param string $attr
 	 * @return string
 	 */
-	public function js_tag($link,$attr){
+	public function jsTag($link,$attr){
 		return "<script type='text/javascript'  src='{$link}' {$attr}></script>\n";
 	}
 	/**
 	 * 得到当期资源合并对象
 	 * @return \LSYS\PageAssets\Merge|null
 	 */
-	public function get_merge(){
+	public function getMerge(){
 		return $this->_merge;
 	}
 	/**
 	 * 得到当前版本号
 	 * @return string
 	 */
-	public function get_version(){
+	public function getVersion(){
 		return $this->_version;
 	}
 	/**
 	 * 得到资源目录
 	 * @return string
 	 */
-	public function get_url(){
-		return $this->_find_url($this->_file_url);
+	public function getUrl(){
+		return $this->_findUrl($this->_file_url);
 	}
-	protected function _find_url($urls){
+	protected function _findUrl($urls){
 		$max=count($urls)-1;
 		if ($max<0) return '/';
 		return $urls[rand(0,$max)];
 	}
 	protected $_is_load=[];
-	protected function _is_load(AssetsFile $file){
+	protected function _isLoad(AssetsFile $file){
 		$hash=md5($file->path());
 		if (in_array($hash,$this->_is_load))return true;
 		$this->_is_load[]=$hash;
