@@ -2,7 +2,6 @@
 	"name" : "lsys/pageassets",
 	"type" : "library",
 	"license": "Apache-2.0",
-
 	"description" : "lsys module pageassets",
 	"autoload" : {
 		"psr-4" : {
