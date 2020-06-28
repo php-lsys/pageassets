@@ -9,7 +9,6 @@ class PageAssets {
 	 * 默认配置
 	 * @var string
 	 */
-	
 	protected $_version;
 	protected $_file_url;
 	/**
@@ -25,7 +24,6 @@ class PageAssets {
 	public function __construct(Config $config,Merge $merge=null){
 		if ($merge)$this->_merge=$merge->setPageAssets($this,$config);
 		$this->_version=$config->get("version","1.0");
-		$dir=realpath(__DIR__."/../../../");
 		$_defurl="assets/";
 		$this->_file_url=(array)$config->get("file_url",$_defurl);
 	}
@@ -34,7 +32,7 @@ class PageAssets {
 	 * @param AssetsFile $file
 	 * @return string
 	 */
-	public function url(AssetsFile $file){
+	public function url(AssetsFile $file):string{
 		if (!$file->isLocal())return $file->path();
 		$url=$this->_file_url;
 		$path=$file->path();
@@ -45,7 +43,7 @@ class PageAssets {
 	 * @param string $css_url
 	 * @return string
 	 */
-	public function cssUrl($css_url){
+	public function cssUrl($css_url):string{
 		$css_url=$this->_cssobj($css_url);
 		return $this->url($css_url);
 	}
@@ -76,15 +74,15 @@ class PageAssets {
 	 * @param array $attr
 	 * @return void|string
 	 */
-	public function css($css_url,$is_merge=null,$attr=[]){
+	public function css($css_url,$is_merge=null,$attr=[]):string {
 		if (!$css_url instanceof CSSFile){
 			$css_url=new CSSFile(strval($css_url),$this->_version);
 		}
-		if ($this->_isLoad($css_url))return;
+		if ($this->_isLoad($css_url))return'';
 		$attr=$this->_attributes($attr);
 		if ($is_merge&&$this->_merge){
 			$this->_merge->addHeaderCss($css_url,$attr);
-			return;
+			return '';
 		}else{
 			if ($this->_merge){
 				$link=$this->_merge->bulidCss($css_url);
@@ -99,7 +97,7 @@ class PageAssets {
 	 * @param string $js_url
 	 * @return string
 	 */
-	public function jsUrl($js_url){
+	public function jsUrl($js_url):string {
 		$js_url=$this->_jsobj($js_url);
 		return $this->url($js_url);
 	}
@@ -131,17 +129,17 @@ class PageAssets {
 	 * @param array $attr
 	 * @return void|string
 	 */
-	public function js($js_url,$is_merge=null,$attr=[]){
+	public function js($js_url,$is_merge=null,$attr=[]):string{
 		$js_url=$this->_jsobj($js_url);
-		if ($this->_isLoad($js_url))return;
+		if ($this->_isLoad($js_url))return '';
 		$attr=$this->_attributes($attr);
 		if ($is_merge===true&&$this->_merge){
 			$this->_merge->addHeaderJs($js_url,$attr);
-			return;
+			return '';
 		}
 		if ($is_merge===false&&$this->_merge){
 			$this->_merge->addFooterJs($js_url,$attr);
-			return;
+			return '';
 		}
 		if ($this->_merge){
 			$link=$this->_merge->bulidJs($js_url);
@@ -155,7 +153,7 @@ class PageAssets {
 	 * @param string $file_url
 	 * @return string
 	 */
-	public function fileUrl($file_url){
+	public function fileUrl($file_url):string{
 		if (!$file_url instanceof AssetsFile){
 			$file_url=new AssetsFile($file_url,$this->_version);
 		}
@@ -167,7 +165,7 @@ class PageAssets {
 	 * @param string $attr
 	 * @return string
 	 */
-	public function cssTag($link,$attr){
+	public function cssTag(string $link,string $attr):string{
 		return "<link type='text/css' rel='stylesheet' href='{$link}' {$attr}/>\n";
 	}
 	/**
@@ -176,7 +174,7 @@ class PageAssets {
 	 * @param string $attr
 	 * @return string
 	 */
-	public function jsTag($link,$attr){
+	public function jsTag(string $link,string $attr):string{
 		return "<script type='text/javascript'  src='{$link}' {$attr}></script>\n";
 	}
 	/**
@@ -190,14 +188,14 @@ class PageAssets {
 	 * 得到当前版本号
 	 * @return string
 	 */
-	public function getVersion(){
-		return $this->_version;
+	public function getVersion():string{
+	    return strval($this->_version);
 	}
 	/**
 	 * 得到资源目录
 	 * @return string
 	 */
-	public function getUrl(){
+	public function getUrl():string{
 		return $this->_findUrl($this->_file_url);
 	}
 	protected function _findUrl($urls){
@@ -231,7 +229,7 @@ class PageAssets {
 			
 			// Add the attribute key
 			$compiled .= ' '.$key;
-			$value=htmlspecialchars( (string) $value, ENT_QUOTES, \LSYS\Core::$charset, true);
+			$value=htmlspecialchars( (string) $value, ENT_QUOTES, \LSYS\Core::charset(), true);
 			// Add the attribute value
 			if($value) $compiled .= '="'.$value.'"';
 		}

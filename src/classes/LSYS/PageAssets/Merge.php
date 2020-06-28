@@ -24,7 +24,7 @@ class Merge{
 	 * $is_bulid　是否进行编译操作 默认null　当为产品环境不编译其他环境编译
 	 */
 	public function __construct($is_bulid=NULL){
-		if ($is_bulid===null)$is_bulid=Core::$environment!==Core::PRODUCT;
+	    if ($is_bulid===null)$is_bulid=!Core::envIs(Core::PRODUCT);
 		$is_bulid=boolval($is_bulid);
 		$this->_bulid=$is_bulid;
 	}
@@ -56,21 +56,21 @@ class Merge{
 	 * @param string $attr
 	 * @return \LSYS\PageAssets\Merge
 	 */
-	public function addHeaderCss(CSSFile $css,$attr=null){
+	public function addHeaderCss(CSSFile $css,$attr=[]){
 		$this->_header_css[]=func_get_args();
 		return $this;
 	}
 	
-	public function bulidCss(CSSFile $css){
+	public function bulidCss(CSSFile $css):string{
 		return $this->_bulidFile($css,'css',"css_url",$this->_file_path,function($data)use($css){
 			return $data;
 		});
 	}
-	protected function _fileGetTime($file){
+	protected function _fileGetTime(string $file):int{
 		if (!is_file($file))return 0;
 		return filemtime($file);
 	}
-	protected function _bulidFile(AssetsFile $file,$type,$tag_handle,$path,$callback){
+	protected function _bulidFile(AssetsFile $file,?string $type,$tag_handle,?string $path,callable $callback):string{
 		if (!$file->isLocal())return $file->path();
 		$url=$file->path();
 		
@@ -104,7 +104,7 @@ class Merge{
 	 * @param string $url
 	 * @return string
 	 */
-	protected function _notfindUrl($file){
+	protected function _notfindUrl($file):string{
 		$url=$this->_page_assets->url($file);
 		return $this->_setNotfindUrl($url);
 	}
@@ -113,7 +113,7 @@ class Merge{
 	 * @param string $url
 	 * @return string
 	 */
-	protected function _setNotfindUrl($url){
+	protected function _setNotfindUrl($url):string{
 		$notfind='notfind';
 		if (strpos($url, '?')===false)return $url."?".$notfind;
 		else return $url."&".$notfind;
@@ -123,7 +123,7 @@ class Merge{
 	 * @param string $url
 	 * @return boolean
 	 */
-	public function isNotfindUrl($url){
+	public function isNotfindUrl(string $url):bool{
 		if (substr($url, -7)=='notfind')return true;
 		else return false;
 	}
@@ -133,7 +133,7 @@ class Merge{
 	 * @param string $attr
 	 * @return \LSYS\PageAssets\Merge
 	 */
-	public function addHeaderJs(JSFile $css,$attr=null){
+	public function addHeaderJs(JSFile $css,$attr=[]){
 		$this->_header_js[]=func_get_args();
 		return $this;
 	}
@@ -143,12 +143,12 @@ class Merge{
 	 * @param string $attr
 	 * @return \LSYS\PageAssets\Merge
 	 */
-	public function addFooterJs(JSFile $css,$attr=null){
+	public function addFooterJs(JSFile $css,$attr=[]){
 		$this->_footer_js[]=func_get_args();
 		return $this;
 	}
 	
-	public function bulidJs(JSFile $js){
+	public function bulidJs(JSFile $js):string{
 		return $this->_bulidFile($js,'js',"js_url", $this->_file_path,function($data){
 			return $data;
 		});
@@ -162,7 +162,7 @@ class Merge{
 	 * @param callable $file_handle
 	 * @return string
 	 */
-	protected function _renderFile(array $files,$path,$ext,$tag_handle,$file_handle){
+	protected function _renderFile(array $files,$path,$ext,$tag_handle,$file_handle):string{
 		$attrs=$_header=$_file=[];
 		foreach ($files as $k=>$v){
 			/**
@@ -217,7 +217,7 @@ class Merge{
 	 * @param string $file
 	 * @return string
 	 */
-	protected function _bulidUrl($file){
+	protected function _bulidUrl(string $file):string{
 		if (count($this->_merge_url)==0)$url='./';
 		else $url=$this->_merge_url[rand(0,count($this->_merge_url)-1)];
 		return $url.$file;
@@ -227,7 +227,7 @@ class Merge{
 	 * @param string $html
 	 * @return mixed
 	 */
-	public function render($html){
+	public function render(string $html):string{
 		if (count($this->_header_css)==0
 			&&count($this->_header_js)==0
 			&&count($this->_footer_js)==0)return $html;
@@ -291,7 +291,7 @@ class Merge{
 	 * @param string $data
 	 * @throws Exception
 	 */
-	protected function _writeBulid(&$file,$data){
+	protected function _writeBulid(string &$file,string $data):void{
 		$file=str_replace(["'",'"'], "-", $file);
 		$dir=dirname($this->_merge_path.$file);
 		if (!is_dir($dir)) throw new Exception(strtr("assets bulid dir not find,plase check your assets config [:dir]",array(":dir"=>$dir)));
